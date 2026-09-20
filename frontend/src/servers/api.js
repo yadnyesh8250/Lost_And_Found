@@ -9,7 +9,7 @@ const API_BASE_URL = (
   import.meta.env.VITE_API_URL ||
   (import.meta.env.DEV
     ? "http://localhost:8000"
-    : "https://campussync-e49n.onrender.com")
+    : "https://lost-and-found-ggdv.onrender.com")
 ).replace(/\/$/, "");
 
 const serverUrl = API_BASE_URL;
