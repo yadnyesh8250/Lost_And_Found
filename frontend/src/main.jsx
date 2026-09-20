@@ -7,9 +7,12 @@ import { BrowserRouter } from "react-router-dom";
 import store from "./redux/store.js";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
 
-export const serverUrl = import.meta.env.MODE === "production" 
-  ? "https://campussync-e49n.onrender.com"
-  : "http://localhost:8000";
+export const serverUrl = (
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.MODE === "production"
+    ? "https://lost-and-found-ggdv.onrender.com"
+    : "http://localhost:8000")
+).replace(/\/$/, "");
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
