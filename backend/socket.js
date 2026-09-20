@@ -5,15 +5,18 @@ import { Server } from "socket.io";
 const app = express();
 const server = http.createServer(app);
 
-const allowedOrigins = [
-  process.env.CLIENT_URL,
-  "http://localhost:5173",
-  "https://campus-sync-gamma.vercel.app",
-];
+const isAllowedOrigin = (origin, callback) => {
+  if (!origin) return callback(null, true);
+  const cleanOrigin = origin.replace(/\/$/, "");
+  if (cleanOrigin.includes("localhost") || cleanOrigin.includes("127.0.0.1")) return callback(null, true);
+  if (cleanOrigin.endsWith(".vercel.app")) return callback(null, true);
+  if (process.env.CLIENT_URL && cleanOrigin === process.env.CLIENT_URL.replace(/\/$/, "")) return callback(null, true);
+  return callback(null, false);
+};
 
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: isAllowedOrigin,
     methods: ["GET", "POST"],
     credentials: true,
   },

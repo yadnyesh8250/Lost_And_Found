@@ -9,11 +9,14 @@ import userRouter from "./routes/userRoutes.js";
 import itemRouter from "./routes/itemRoutes.js";
 import messageRouter from './routes/messageRoutes.js';
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  process.env.CLIENT_URL,
-  "https://campus-sync-gamma.vercel.app",
-];
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  const cleanOrigin = origin.replace(/\/$/, "");
+  if (cleanOrigin.includes("localhost") || cleanOrigin.includes("127.0.0.1")) return true;
+  if (cleanOrigin.endsWith(".vercel.app")) return true;
+  if (process.env.CLIENT_URL && cleanOrigin === process.env.CLIENT_URL.replace(/\/$/, "")) return true;
+  return false;
+};
 
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true, limit: "5mb" }));
@@ -24,10 +27,11 @@ app.use('/public', express.static(path.join(process.cwd(), 'public')));
 
 app.use(cors({
     origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (isAllowedOrigin(origin)) {
             callback(null, true);
         } else {
-            callback(new Error('Not allowed by CORS'));
+            console.warn(`[CORS Blocked] Origin not allowed: ${origin}`);
+            callback(null, false);
         }
     },
     credentials: true,
